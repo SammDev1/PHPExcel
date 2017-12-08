@@ -311,14 +311,21 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
         //    so we need to load case-insensitively from the zip file
         
         // Apache POI fixes
-        $contents = $archive->getFromIndex(
-            $archive->locateName($fileName, ZIPARCHIVE::FL_NOCASE)
-        );
-        if ($contents === false) {
-            $contents = $archive->getFromIndex(
-                $archive->locateName(substr($fileName, 1), ZIPARCHIVE::FL_NOCASE)
-            );
-        }
+	    $zipClass = PHPExcel_Settings::getZipClass();
+
+	    if ($zipClass == 'ZipArchive') {
+		    $contents = $archive->getFromIndex(
+			    $archive->locateName($fileName, ZIPARCHIVE::FL_NOCASE)
+		    );
+		    if ($contents === false) {
+			    $contents = $archive->getFromIndex(
+				    $archive->locateName(substr($fileName, 1), ZIPARCHIVE::FL_NOCASE)
+			    );
+		    }
+	    }
+	    else {
+		    $contents = $archive->getFromIndex($archive->locateName($fileName));
+	    }
 
         return $contents;
     }
